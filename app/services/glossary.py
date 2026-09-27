@@ -126,6 +126,20 @@ class GlossaryMatcher:
     def __len__(self) -> int:
         return len(self._terms)
 
+    def by_ids(self, ids: list[int]) -> list[GlossaryTerm]:
+        """Terms for ``ids`` in the order given; unknown ids are skipped."""
+        by_id = {t.id: t for t in self._terms}
+        return [by_id[i] for i in dict.fromkeys(ids) if i in by_id]
+
+    def find_by_text(self, text: str) -> GlossaryTerm | None:
+        """The glossary entry whose English or Urdu side is exactly ``text`` (case/spelling-insensitive)."""
+        en = " ".join(text.split()).lower()
+        ur = normalize_for_matching(text)
+        for t in self._terms:
+            if t.term_en.strip().lower() == en or (ur and normalize_for_matching(t.term_ur) == ur):
+                return t
+        return None
+
     # -- matching ------------------------------------------------------------
     def _candidates(self, text: str, lang: str) -> list[tuple[int, int, _Compiled]]:
         cands: list[tuple[int, int, _Compiled]] = []

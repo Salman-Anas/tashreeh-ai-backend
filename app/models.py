@@ -84,6 +84,49 @@ class LLMTranslation(BaseModel):
     notes: list[str]
 
 
+class LLMTermExplanation(BaseModel):
+    term_id: int
+    simple_en: str
+    simple_ur: str
+    example_en: str
+    example_ur: str
+
+
+class LLMExplanations(BaseModel):
+    explanations: list[LLMTermExplanation]
+
+
+# ---------------------------------------------------------------------------
+# Plain-language term explanations ("Explain in simple words")
+# ---------------------------------------------------------------------------
+class TermExplanation(BaseModel):
+    term_id: int
+    term_en: str
+    term_ur: str
+    category: str | None = None
+    simple_en: str  # what it means, for a non-lawyer, in plain English
+    simple_ur: str  # the same in everyday Urdu
+    example_en: str  # a short real-life example
+    example_ur: str
+    cached: bool = False
+
+
+EXPLAIN_DISCLAIMER_EN = "General information to help you understand the term, not legal advice."
+EXPLAIN_DISCLAIMER_UR = "یہ اصطلاح سمجھانے کے لیے عمومی معلومات ہیں، قانونی مشورہ نہیں۔"
+
+
+class ExplainRequest(BaseModel):
+    term_ids: list[int] = Field(min_length=1, max_length=12)
+    session_id: str | None = Field(default=None, max_length=64)
+
+
+class ExplainResponse(BaseModel):
+    explanations: list[TermExplanation]
+    missing: list[int] = Field(default_factory=list)  # ids that could not be explained
+    disclaimer_en: str = EXPLAIN_DISCLAIMER_EN
+    disclaimer_ur: str = EXPLAIN_DISCLAIMER_UR
+
+
 # ---------------------------------------------------------------------------
 # Translate API
 # ---------------------------------------------------------------------------
@@ -260,6 +303,7 @@ class PricingResponse(BaseModel):
 class PublicTranslateRequest(BaseModel):
     text: str = Field(description="Legal text to translate (max MAX_INPUT_CHARS characters).")
     direction: Direction = Field(description='"en-ur" (English → Urdu) or "ur-en" (Urdu → English).')
+    explain: bool = Field(default=False, description="Also explain each legal term in simple English and Urdu, with an example.")
 
 
 class PublicTerm(BaseModel):
@@ -286,6 +330,24 @@ class PublicTranslateResponse(BaseModel):
     terms: list[PublicTerm]
     terms_missing: int
     notes: list[str]
+    model: str
+    latency_ms: int
+    usage: PublicUsage
+    explanations: list[TermExplanation] | None = None  # present when explain=true
+
+
+class PublicExplainRequest(BaseModel):
+    terms: list[str] = Field(
+        min_length=1, max_length=12, description="Glossary terms in English or Urdu, e.g. [\"bail\", \"مدعی\"]."
+    )
+
+
+class PublicExplainResponse(BaseModel):
+    id: str
+    explanations: list[TermExplanation]
+    not_found: list[str]  # terms that are not in the legal glossary
+    disclaimer_en: str = EXPLAIN_DISCLAIMER_EN
+    disclaimer_ur: str = EXPLAIN_DISCLAIMER_UR
     model: str
     latency_ms: int
     usage: PublicUsage

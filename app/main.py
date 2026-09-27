@@ -13,7 +13,7 @@ from app.db import db_configured
 from app.deps import glossary, load_glossary
 from app.errors import register_error_handlers
 from app.models import HealthResponse
-from app.routers import developer, feedback, glossary as glossary_router, history, public_api, translate
+from app.routers import developer, explain, feedback, glossary as glossary_router, history, public_api, translate
 from app.services.gemini_client import get_gemini
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
@@ -61,6 +61,7 @@ app.add_middleware(ScopedCORS, site_origins=settings.cors_origin_list)
 register_error_handlers(app)
 
 app.include_router(translate.router)
+app.include_router(explain.router)
 app.include_router(glossary_router.router)
 app.include_router(history.router)
 app.include_router(feedback.router)

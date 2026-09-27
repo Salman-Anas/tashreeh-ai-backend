@@ -13,6 +13,7 @@ from app.config import BACKEND_DIR, get_settings
 from app.db import db_configured, get_db
 from app.errors import AppError
 from app.models import GlossaryTerm
+from app.services.explain import TermExplainer
 from app.services.gemini_client import get_gemini
 from app.services.glossary import GlossaryMatcher, load_terms_from_csv
 from app.services.pipeline import TranslationPipeline
@@ -24,6 +25,7 @@ GLOSSARY_CSV = BACKEND_DIR / "data" / "glossary.csv"
 
 glossary = GlossaryMatcher()
 _pipeline: TranslationPipeline | None = None
+_explainer: TermExplainer | None = None
 
 
 def _fetch_glossary_from_db() -> list[GlossaryTerm]:
@@ -74,6 +76,13 @@ def get_pipeline() -> TranslationPipeline:
             concurrency=get_settings().translate_concurrency,
         )
     return _pipeline
+
+
+def get_explainer() -> TermExplainer:
+    global _explainer
+    if _explainer is None:
+        _explainer = TermExplainer(get_gemini())
+    return _explainer
 
 
 class RateLimiter:
