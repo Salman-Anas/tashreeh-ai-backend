@@ -1,0 +1,23 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Eval outputs
+eval/results.csv
+eval/summary.md
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
