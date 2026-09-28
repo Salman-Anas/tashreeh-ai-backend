@@ -112,6 +112,8 @@ class LLMTermExplanation(BaseModel):
     term_id: int
     legal_en: str
     legal_ur: str
+    names_en: str
+    names_ur: str
     simple_en: str
     simple_ur: str
     example_en: str
@@ -133,6 +135,8 @@ class TermExplanation(BaseModel):
     category: str | None = None
     legal_en: str = ""  # the formal legal meaning under Pakistani law, in English
     legal_ur: str = ""  # the same in Urdu
+    names_en: str = ""  # everyday vs official/literal Urdu name, and what the literal one means
+    names_ur: str = ""
     simple_en: str  # what it means, for a non-lawyer, in plain English
     simple_ur: str  # the same in everyday Urdu
     example_en: str  # a short real-life example

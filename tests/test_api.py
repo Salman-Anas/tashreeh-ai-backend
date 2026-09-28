@@ -95,6 +95,23 @@ def test_history_and_feedback_need_database(client: TestClient) -> None:
     assert r.status_code == 503
 
 
+def test_word_fix_alone_is_valid_feedback(client: TestClient) -> None:
+    fix = {"term_id": 1, "source": "bail", "old_target": "ضمانت", "new_target": "بیل"}
+    base = {"translation_id": "00000000-0000-0000-0000-000000000000"}
+    # Gets past validation (and stops only because there is no database in tests).
+    assert client.post("/api/feedback", json={**base, "term_corrections": [fix]}).status_code == 503
+    unchanged = {**fix, "new_target": "ضمانت"}
+    r = client.post("/api/feedback", json={**base, "term_corrections": [unchanged]})
+    assert r.status_code == 422 and r.json()["error"]["code"] == "empty_feedback"
+
+
+def test_review_and_glossary_edit_need_database(client: TestClient) -> None:
+    assert client.get("/api/review").status_code == 503
+    assert client.post("/api/review/1/approve", json={}).status_code == 503
+    r = client.patch("/api/glossary/1", json={"term_ur_common": "بیل"})
+    assert r.status_code == 503 and r.json()["error"]["code"] == "read_only"
+
+
 def _docx_bytes(paragraphs: list[str]) -> bytes:
     doc = Document()
     doc.add_heading("Order", level=1)

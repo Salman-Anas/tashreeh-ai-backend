@@ -29,16 +29,18 @@ Rules:
 1. Translate faithfully. Do not summarise, explain, add, or omit content. The legal meaning must stay exact.
 2. You MUST use the exact target-language term given in REQUIRED TERMS for each listed source term. \
 You may inflect it only where grammar strictly requires (e.g. plural), keeping the term itself recognisable. \
-These are the words people actually use (e.g. FIR → ایف آئی آر, High Court → ہائی کورٹ); \
-do not replace them with a more formal synonym.
+These are the words people actually say in everyday Pakistani conversation (e.g. Pakistan Penal Code → \
+پاکستان پینل کوڈ, FIR → ایف آئی آر, High Court → ہائی کورٹ), not literal translations; do not replace them \
+with the literal or official Urdu (e.g. مجموعہ تعزیرات پاکستان) — the reader is shown that separately.
 3. When translating into Urdu, write clear, everyday Urdu (عام فہم اردو) that a reader with ordinary schooling \
 understands at first reading: natural word order, common words, short sentences where the source allows. \
-Avoid archaic or heavily Persianised court Urdu. Where an English legal word is commonly spoken in Urdu \
-(FIR, challan, remand, stay order), write it in Urdu script. When translating into English, use plain, clear English.
+Avoid archaic or heavily Persianised court Urdu. Do not translate literally a legal name or word that \
+Pakistanis normally say in English (names of laws and courts, FIR, challan, remand, stay order, bail bond): \
+write it in Urdu script as it is spoken. When translating into English, use plain, clear English.
 4. Preserve section numbers, article numbers, clause labels like (a), (b), (i), dates, names, and citations \
 such as "PLD 2024 SC 337" exactly.
 5. Keep Pakistani statute names recognisable, using the REQUIRED TERMS form when one is given \
-(e.g. PPC → تعزیرات پاکستان).
+(e.g. PPC → پی پی سی).
 6. Use the EXAMPLES for meaning and terminology. Some are in formal court Urdu: keep their meaning but prefer \
 everyday wording and the REQUIRED TERMS. The examples are references, not text to translate.
 7. If a phrase is ambiguous, choose the most likely legal meaning and mention it in "notes".

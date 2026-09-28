@@ -17,6 +17,7 @@ from typing import Protocol, TypeVar
 from pydantic import BaseModel
 
 from app.models import GlossaryTerm, LLMExplanations, TermExplanation
+from app.services.gemini_client import GeminiError
 from app.services.normalize import normalize_for_matching, normalize_urdu
 
 log = logging.getLogger(__name__)
@@ -33,6 +34,10 @@ For every term you are given, write:
 precise sentences. Name the law it comes from (e.g. "Code of Criminal Procedure, 1898") and a section or article \
 number only if you are certain of it.
 - legal_ur: the same legal meaning in Urdu script; you may use the official legal term here.
+- names_en: only when the term has an "everyday Urdu" form: one or two sentences saying that people normally \
+say the everyday form, that the official/literal Urdu is the other one, and what the official Urdu literally means \
+word by word (e.g. مجموعہ تعزیرات پاکستان = "collection of Pakistan's penal laws"). Otherwise an empty string.
+- names_ur: the same in simple Urdu, or an empty string.
 - simple_en: one or two short sentences in plain English saying what the term means in practice in Pakistan. No legal jargon; if you must use a legal word, explain it.
 - simple_ur: the same meaning in simple, everyday Urdu (عام فہم اردو) in Urdu script, not formal legal Urdu.
 - example_en: one short, realistic example situation in Pakistan (one or two sentences) that shows the term in use.
@@ -109,12 +114,19 @@ class TermExplainer:
                 todo.append(t)
 
         if todo:
-            out = await self.llm.generate_structured(
-                system_instruction=EXPLAIN_INSTRUCTION,
-                contents=_prompt(todo),
-                schema=LLMExplanations,
-                temperature=0.3,
-            )
+            try:
+                out = await self.llm.generate_structured(
+                    system_instruction=EXPLAIN_INSTRUCTION,
+                    contents=_prompt(todo),
+                    schema=LLMExplanations,
+                    temperature=0.3,
+                )
+            except GeminiError as exc:
+                if not found:
+                    raise
+                # Still show what is cached; the rest are reported as missing.
+                log.warning("explain: model call failed, returning %d cached explanations: %s", len(found), exc)
+                out = LLMExplanations(explanations=[])
             by_id = {t.id: t for t in todo}
             for item in out.explanations:
                 term = by_id.get(item.term_id)
@@ -130,6 +142,8 @@ class TermExplainer:
                     category=term.category,
                     legal_en=item.legal_en.strip(),
                     legal_ur=normalize_urdu(item.legal_ur, preserve_newlines=False),
+                    names_en=item.names_en.strip() if term.term_ur_common else "",
+                    names_ur=normalize_urdu(item.names_ur, preserve_newlines=False) if term.term_ur_common else "",
                     simple_en=item.simple_en.strip(),
                     simple_ur=normalize_urdu(item.simple_ur, preserve_newlines=False),
                     example_en=item.example_en.strip(),

@@ -12,6 +12,7 @@ from app.models import LLMExplanations, LLMTermExplanation, LLMTranslation
 from app.routers import public_api
 from app.services.api_keys import MemoryKeyStore, set_key_store
 from app.services.explain import TermExplainer
+from app.services.gemini_client import GeminiError
 from app.services.glossary import GlossaryMatcher
 from app.services.pipeline import TranslationPipeline
 from app.services.usage import record_generation
@@ -37,6 +38,10 @@ class FakeExplainLLM:
             explanations=[
                 LLMTermExplanation(
                     term_id=i,
+                    legal_en=f"Legal meaning of term {i}.",
+                    legal_ur="قانونی مفہوم",
+                    names_en=f"Names of term {i}.",
+                    names_ur="نام",
                     simple_en=f"Plain meaning of term {i}.",
                     simple_ur="آسان مطلب",
                     example_en=f"Example for term {i}.",
@@ -74,6 +79,22 @@ async def test_missing_explanations_are_reported(matcher: GlossaryMatcher) -> No
     ex = TermExplainer(FakeExplainLLM(skip={2}))
     got, missing = await ex.explain(matcher.by_ids([1, 2]))
     assert [e.term_id for e in got] == [1] and missing == [2]
+
+
+@pytest.mark.asyncio
+async def test_cached_explanations_survive_a_model_outage(matcher: GlossaryMatcher) -> None:
+    llm = FakeExplainLLM()
+    ex = TermExplainer(llm)
+    await ex.explain(matcher.by_ids([1]))
+
+    async def overloaded(**_: object) -> None:
+        raise GeminiError("Gemini error (503): high demand")
+
+    llm.generate_structured = overloaded  # type: ignore[method-assign]
+    out, missing = await ex.explain(matcher.by_ids([1, 2]))
+    assert [e.term_id for e in out] == [1] and out[0].cached and missing == [2]
+    with pytest.raises(GeminiError):
+        await ex.explain(matcher.by_ids([2]))
 
 
 def test_glossary_lookup_helpers(matcher: GlossaryMatcher) -> None:

@@ -1,201 +1,207 @@
-term_en,term_ur,category,notes,source
-bail,ضمانت,criminal,,seed
-accused,ملزم,criminal,,seed
-complainant,مستغیث,criminal,criminal complaint context,seed
-plaintiff,مدعی,civil,,seed
-defendant,مدعا علیہ,civil,,seed
-witness,گواہ,court,,seed
-evidence,شہادت,court,,seed
-judgment,فیصلہ,court,,seed
-appeal,اپیل,court,,seed
-affidavit,بیان حلفی,court,,seed
-power of attorney,مختار نامہ,civil,,seed
-summons,سمن,court,,seed
-First Information Report,ابتدائی اطلاعی رپورٹ,criminal,FIR,seed
-Pakistan Penal Code,مجموعہ تعزیرات پاکستان,statute,,seed
-Code of Criminal Procedure,مجموعہ ضابطہ فوجداری,statute,,seed
-Code of Civil Procedure,مجموعہ ضابطہ دیوانی,statute,,seed
-High Court,عدالت عالیہ,court,,seed
-Supreme Court,عدالت عظمیٰ,court,,seed
-Constitution,آئین,constitutional,,seed
-preemption,شفع,land,,seed
-record of rights,فرد ملکیت,land,also جمع بندی,seed
-mutation,انتقال,land,land-record mutation,seed
-relinquishment deed,دستبرداری نامہ,land,,seed
-Constitution,دستور,constitutional,REVIEW: official Urdu text of the 1973 Constitution uses دستور; accepted as an alternative,suggested
-preemption,حق شفعہ,land,REVIEW: common statutory form is شفعہ / حق شفعہ; accepted as an alternative,suggested
-record of rights,جمع بندی,land,REVIEW: Jamabandi is the periodical record of rights; فرد is an extract of it; accepted as an alternative,suggested
-arrest,گرفتاری,criminal,,glossary-v2
-warrant,وارنٹ,criminal,,glossary-v2
-warrant of arrest,وارنٹ گرفتاری,criminal,,glossary-v2
-search warrant,وارنٹ تلاشی,criminal,,glossary-v2
-remand,ریمانڈ,criminal,,glossary-v2
-physical remand,جسمانی ریمانڈ,criminal,,glossary-v2
-judicial remand,جوڈیشل ریمانڈ,criminal,,glossary-v2
-police custody,پولیس تحویل,criminal,,glossary-v2
-offence,جرم,criminal,,glossary-v2
-offense,جرم,criminal,US spelling,glossary-v2
-cognizable offence,قابل دست اندازی پولیس جرم,criminal,,glossary-v2
-non-cognizable offence,ناقابل دست اندازی پولیس جرم,criminal,,glossary-v2
-bailable offence,قابل ضمانت جرم,criminal,,glossary-v2
-non-bailable offence,ناقابل ضمانت جرم,criminal,,glossary-v2
-compoundable offence,قابل راضی نامہ جرم,criminal,,glossary-v2
-anticipatory bail,ضمانت قبل از گرفتاری,criminal,,glossary-v2
-pre-arrest bail,ضمانت قبل از گرفتاری,criminal,,glossary-v2
-post-arrest bail,ضمانت بعد از گرفتاری,criminal,,glossary-v2
-surety,ضامن,criminal,,glossary-v2
-surety bond,ضمانتی مچلکہ,criminal,,glossary-v2
-personal bond,ذاتی مچلکہ,criminal,,glossary-v2
-investigation,تفتیش,criminal,,glossary-v2
-investigating officer,تفتیشی افسر,criminal,,glossary-v2
-challan,چالان,criminal,final police report (s.173 CrPC),glossary-v2
-police station,تھانہ,criminal,,glossary-v2
-conviction,سزا یابی,criminal,,glossary-v2
-acquittal,بریت,criminal,,glossary-v2
-sentence,سزا,criminal,,glossary-v2
-punishment,سزا,criminal,,glossary-v2
-imprisonment,قید,criminal,,glossary-v2
-rigorous imprisonment,قید بامشقت,criminal,,glossary-v2
-simple imprisonment,قید محض,criminal,,glossary-v2
-life imprisonment,عمر قید,criminal,,glossary-v2
-imprisonment for life,عمر قید,criminal,,glossary-v2
-death sentence,سزائے موت,criminal,,glossary-v2
-fine,جرمانہ,criminal,monetary penalty,glossary-v2
-murder,قتل,criminal,,glossary-v2
-qatl-i-amd,قتل عمد,criminal,intentional murder (s.300 PPC),glossary-v2
-qisas,قصاص,criminal,,glossary-v2
-diyat,دیت,criminal,,glossary-v2
-hurt,ضرر,criminal,Chapter XVI PPC sense,glossary-v2
-theft,چوری,criminal,,glossary-v2
-robbery,رہزنی,criminal,,glossary-v2
-dacoity,ڈکیتی,criminal,,glossary-v2
-kidnapping,اغوا,criminal,,glossary-v2
-cheating,دھوکہ دہی,criminal,,glossary-v2
-forgery,جعل سازی,criminal,,glossary-v2
-abetment,اعانت جرم,criminal,,glossary-v2
-criminal conspiracy,مجرمانہ سازش,criminal,,glossary-v2
-confession,اقبال جرم,criminal,,glossary-v2
-prosecution,استغاثہ,criminal,,glossary-v2
-public prosecutor,سرکاری وکیل,criminal,,glossary-v2
-proclaimed offender,اشتہاری مجرم,criminal,,glossary-v2
-absconder,مفرور,criminal,,glossary-v2
-case property,مال مقدمہ,criminal,,glossary-v2
-Federal Investigation Agency,وفاقی تحقیقاتی ادارہ,criminal,,glossary-v2
-Magistrate,مجسٹریٹ,court,,glossary-v2
-Sessions Judge,سیشن جج,court,,glossary-v2
-Additional Sessions Judge,ایڈیشنل سیشن جج,court,,glossary-v2
-Civil Judge,سول جج,court,,glossary-v2
-judge,جج,court,,glossary-v2
-Chief Justice,چیف جسٹس,court,,glossary-v2
-bench,بنچ,court,,glossary-v2
-court,عدالت,court,,glossary-v2
-Federal Shariat Court,وفاقی شرعی عدالت,court,,glossary-v2
-Family Court,عائلی عدالت,court,,glossary-v2
-Anti-Terrorism Court,انسداد دہشت گردی عدالت,court,,glossary-v2
-accountability court,احتساب عدالت,court,,glossary-v2
-National Accountability Bureau,قومی احتساب بیورو,court,,glossary-v2
-hearing,سماعت,court,,glossary-v2
-date of hearing,تاریخ سماعت,court,,glossary-v2
-adjournment,التوا,court,,glossary-v2
-ex parte,یکطرفہ,court,,glossary-v2
-cross-examination,جرح,court,,glossary-v2
-statement,بیان,court,,glossary-v2
-contempt of court,توہین عدالت,court,,glossary-v2
-jurisdiction,دائرہ اختیار,court,,glossary-v2
-interim order,عبوری حکم,court,,glossary-v2
-petition,درخواست,court,,glossary-v2
-petitioner,درخواست گزار,court,,glossary-v2
-respondent,مسئول علیہ,court,,glossary-v2
-appellant,اپیل کنندہ,court,,glossary-v2
-review petition,درخواست نظرثانی,court,,glossary-v2
-lawyer,وکیل,court,,glossary-v2
-advocate,وکیل,court,,glossary-v2
-counsel,وکیل,court,,glossary-v2
-Advocate General,ایڈووکیٹ جنرل,court,,glossary-v2
-Attorney General,اٹارنی جنرل,court,,glossary-v2
-Bar Council,بار کونسل,court,,glossary-v2
-oath,حلف,court,,glossary-v2
-notice,نوٹس,court,,glossary-v2
-legal notice,قانونی نوٹس,court,,glossary-v2
-burden of proof,بار ثبوت,court,,glossary-v2
-documentary evidence,دستاویزی شہادت,court,,glossary-v2
-oral evidence,زبانی شہادت,court,,glossary-v2
-suit,دعویٰ,civil,,glossary-v2
-civil suit,دیوانی دعویٰ,civil,,glossary-v2
-suit for declaration,دعویٰ استقرار حق,civil,,glossary-v2
-plaint,عرضی دعویٰ,civil,,glossary-v2
-written statement,جواب دعویٰ,civil,,glossary-v2
-decree,ڈگری,civil,,glossary-v2
-decree holder,ڈگری دار,civil,,glossary-v2
-judgment debtor,مدیون ڈگری,civil,,glossary-v2
-execution of decree,اجرائے ڈگری,civil,,glossary-v2
-injunction,حکم امتناعی,civil,,glossary-v2
-temporary injunction,عارضی حکم امتناعی,civil,,glossary-v2
-permanent injunction,مستقل حکم امتناعی,civil,,glossary-v2
-stay order,حکم امتناعی,civil,,glossary-v2
-revision,نگرانی,civil,civil revision (s.115 CPC),glossary-v2
-damages,ہرجانہ,civil,,glossary-v2
-compensation,معاوضہ,civil,,glossary-v2
-contract,معاہدہ,civil,,glossary-v2
-agreement,معاہدہ,civil,,glossary-v2
-agreement to sell,اقرار نامہ بیع,civil,,glossary-v2
-arbitration,ثالثی,civil,,glossary-v2
-arbitrator,ثالث,civil,,glossary-v2
-tenant,کرایہ دار,civil,,glossary-v2
-landlord,مالک مکان,civil,,glossary-v2
-rent,کرایہ,civil,,glossary-v2
-ejectment,بے دخلی,civil,,glossary-v2
-eviction,بے دخلی,civil,,glossary-v2
-marriage,نکاح,family,,glossary-v2
-nikahnama,نکاح نامہ,family,,glossary-v2
-divorce,طلاق,family,,glossary-v2
-khula,خلع,family,,glossary-v2
-dower,حق مہر,family,,glossary-v2
-maintenance,نان و نفقہ,family,family-law sense,glossary-v2
-custody,تحویل,family,,glossary-v2
-guardian,سرپرست,family,,glossary-v2
-dissolution of marriage,تنسیخ نکاح,family,,glossary-v2
-restitution of conjugal rights,اعادہ حقوق زن و شوہر,family,,glossary-v2
-inheritance,وراثت,family,,glossary-v2
-heir,وارث,family,,glossary-v2
-legal heir,قانونی وارث,family,,glossary-v2
-property,جائیداد,land,,glossary-v2
-immovable property,غیر منقولہ جائیداد,land,,glossary-v2
-movable property,منقولہ جائیداد,land,,glossary-v2
-possession,قبضہ,land,,glossary-v2
-owner,مالک,land,,glossary-v2
-ownership,ملکیت,land,,glossary-v2
-sale deed,بیع نامہ,land,,glossary-v2
-gift deed,ہبہ نامہ,land,,glossary-v2
-mortgage,رہن,land,,glossary-v2
-lease,پٹہ,land,,glossary-v2
-khasra number,خسرہ نمبر,land,,glossary-v2
-khewat,کھیوٹ,land,,glossary-v2
-Patwari,پٹواری,land,,glossary-v2
-Tehsildar,تحصیلدار,land,,glossary-v2
-Sub-Registrar,سب رجسٹرار,land,,glossary-v2
-land revenue,مالیہ,land,,glossary-v2
-land acquisition,حصول اراضی,land,,glossary-v2
-encroachment,تجاوزات,land,,glossary-v2
-stamp paper,اسٹامپ پیپر,land,,glossary-v2
-fundamental rights,بنیادی حقوق,constitutional,,glossary-v2
-writ petition,رٹ پٹیشن,constitutional,,glossary-v2
-Parliament,پارلیمنٹ,constitutional,,glossary-v2
-National Assembly,قومی اسمبلی,constitutional,,glossary-v2
-Senate,سینیٹ,constitutional,,glossary-v2
-Provincial Assembly,صوبائی اسمبلی,constitutional,,glossary-v2
-Federal Government,وفاقی حکومت,constitutional,,glossary-v2
-Provincial Government,صوبائی حکومت,constitutional,,glossary-v2
-government,حکومت,constitutional,,glossary-v2
-ordinance,آرڈیننس,constitutional,,glossary-v2
-amendment,ترمیم,constitutional,,glossary-v2
-article,آرٹیکل,constitutional,article of the Constitution,glossary-v2
-section,دفعہ,statute,,glossary-v2
-sub-section,ذیلی دفعہ,statute,,glossary-v2
-clause,شق,statute,,glossary-v2
-schedule,جدول,statute,,glossary-v2
-rules,قواعد,statute,,glossary-v2
-notification,اعلامیہ,statute,,glossary-v2
-Qanun-e-Shahadat Order,قانون شہادت آرڈر,statute,1984,glossary-v2
-Muslim Family Laws Ordinance,مسلم عائلی قوانین آرڈیننس,statute,1961,glossary-v2
-Anti-Terrorism Act,انسداد دہشت گردی ایکٹ,statute,1997,glossary-v2
+term_en,term_ur,term_ur_common,category,notes,source
+bail,ضمانت,,criminal,,seed
+accused,ملزم,,criminal,,seed
+complainant,مستغیث,مدعی مقدمہ,criminal,criminal complaint context,seed
+plaintiff,مدعی,,civil,,seed
+defendant,مدعا علیہ,,civil,,seed
+witness,گواہ,,court,,seed
+evidence,شہادت,ثبوت,court,,seed
+judgment,فیصلہ,,court,,seed
+appeal,اپیل,,court,,seed
+affidavit,بیان حلفی,حلف نامہ,court,,seed
+power of attorney,مختار نامہ,,civil,,seed
+summons,سمن,,court,,seed
+First Information Report,ابتدائی اطلاعی رپورٹ,ایف آئی آر,criminal,FIR,seed
+Pakistan Penal Code,مجموعہ تعزیرات پاکستان,پاکستان پینل کوڈ,statute,,seed
+Code of Criminal Procedure,مجموعہ ضابطہ فوجداری,کوڈ آف کریمنل پروسیجر,statute,,seed
+Code of Civil Procedure,مجموعہ ضابطہ دیوانی,کوڈ آف سول پروسیجر,statute,,seed
+High Court,عدالت عالیہ,ہائی کورٹ,court,,seed
+Supreme Court,عدالت عظمیٰ,سپریم کورٹ,court,,seed
+Constitution,آئین,,constitutional,,seed
+preemption,شفع,حق شفعہ,land,,seed
+record of rights,فرد ملکیت,,land,also جمع بندی,seed
+mutation,انتقال,,land,land-record mutation,seed
+relinquishment deed,دستبرداری نامہ,,land,,seed
+Constitution,دستور,,constitutional,REVIEW: official Urdu text of the 1973 Constitution uses دستور; accepted as an alternative,suggested
+preemption,حق شفعہ,,land,REVIEW: common statutory form is شفعہ / حق شفعہ; accepted as an alternative,suggested
+record of rights,جمع بندی,,land,REVIEW: Jamabandi is the periodical record of rights; فرد is an extract of it; accepted as an alternative,suggested
+arrest,گرفتاری,,criminal,,glossary-v2
+warrant,وارنٹ,,criminal,,glossary-v2
+warrant of arrest,وارنٹ گرفتاری,,criminal,,glossary-v2
+search warrant,وارنٹ تلاشی,سرچ وارنٹ,criminal,,glossary-v2
+remand,ریمانڈ,,criminal,,glossary-v2
+physical remand,جسمانی ریمانڈ,,criminal,,glossary-v2
+judicial remand,جوڈیشل ریمانڈ,,criminal,,glossary-v2
+police custody,پولیس تحویل,پولیس کی حراست,criminal,,glossary-v2
+offence,جرم,,criminal,,glossary-v2
+offense,جرم,,criminal,US spelling,glossary-v2
+cognizable offence,قابل دست اندازی پولیس جرم,,criminal,,glossary-v2
+non-cognizable offence,ناقابل دست اندازی پولیس جرم,,criminal,,glossary-v2
+bailable offence,قابل ضمانت جرم,,criminal,,glossary-v2
+non-bailable offence,ناقابل ضمانت جرم,,criminal,,glossary-v2
+compoundable offence,قابل راضی نامہ جرم,,criminal,,glossary-v2
+anticipatory bail,ضمانت قبل از گرفتاری,,criminal,,glossary-v2
+pre-arrest bail,ضمانت قبل از گرفتاری,,criminal,,glossary-v2
+post-arrest bail,ضمانت بعد از گرفتاری,,criminal,,glossary-v2
+surety,ضامن,,criminal,,glossary-v2
+surety bond,ضمانتی مچلکہ,,criminal,,glossary-v2
+personal bond,ذاتی مچلکہ,,criminal,,glossary-v2
+investigation,تفتیش,,criminal,,glossary-v2
+investigating officer,تفتیشی افسر,,criminal,,glossary-v2
+challan,چالان,,criminal,final police report (s.173 CrPC),glossary-v2
+police station,تھانہ,,criminal,,glossary-v2
+conviction,سزا یابی,,criminal,,glossary-v2
+acquittal,بریت,,criminal,,glossary-v2
+sentence,سزا,,criminal,,glossary-v2
+punishment,سزا,,criminal,,glossary-v2
+imprisonment,قید,,criminal,,glossary-v2
+rigorous imprisonment,قید بامشقت,,criminal,,glossary-v2
+simple imprisonment,قید محض,سادہ قید,criminal,,glossary-v2
+life imprisonment,عمر قید,,criminal,,glossary-v2
+imprisonment for life,عمر قید,,criminal,,glossary-v2
+death sentence,سزائے موت,,criminal,,glossary-v2
+fine,جرمانہ,,criminal,monetary penalty,glossary-v2
+murder,قتل,,criminal,,glossary-v2
+qatl-i-amd,قتل عمد,,criminal,intentional murder (s.300 PPC),glossary-v2
+qisas,قصاص,,criminal,,glossary-v2
+diyat,دیت,,criminal,,glossary-v2
+hurt,ضرر,,criminal,Chapter XVI PPC sense,glossary-v2
+theft,چوری,,criminal,,glossary-v2
+robbery,رہزنی,,criminal,,glossary-v2
+dacoity,ڈکیتی,,criminal,,glossary-v2
+kidnapping,اغوا,,criminal,,glossary-v2
+cheating,دھوکہ دہی,,criminal,,glossary-v2
+forgery,جعل سازی,,criminal,,glossary-v2
+abetment,اعانت جرم,,criminal,,glossary-v2
+criminal conspiracy,مجرمانہ سازش,,criminal,,glossary-v2
+confession,اقبال جرم,,criminal,,glossary-v2
+prosecution,استغاثہ,,criminal,,glossary-v2
+public prosecutor,سرکاری وکیل,,criminal,,glossary-v2
+proclaimed offender,اشتہاری مجرم,اشتہاری ملزم,criminal,,glossary-v2
+absconder,مفرور,,criminal,,glossary-v2
+case property,مال مقدمہ,,criminal,,glossary-v2
+Federal Investigation Agency,وفاقی تحقیقاتی ادارہ,ایف آئی اے,criminal,,glossary-v2
+Magistrate,مجسٹریٹ,,court,,glossary-v2
+Sessions Judge,سیشن جج,,court,,glossary-v2
+Additional Sessions Judge,ایڈیشنل سیشن جج,,court,,glossary-v2
+Civil Judge,سول جج,,court,,glossary-v2
+judge,جج,,court,,glossary-v2
+Chief Justice,چیف جسٹس,,court,,glossary-v2
+bench,بنچ,,court,,glossary-v2
+court,عدالت,,court,,glossary-v2
+Federal Shariat Court,وفاقی شرعی عدالت,فیڈرل شریعت کورٹ,court,,glossary-v2
+Family Court,عائلی عدالت,فیملی کورٹ,court,,glossary-v2
+Anti-Terrorism Court,انسداد دہشت گردی عدالت,,court,,glossary-v2
+accountability court,احتساب عدالت,,court,,glossary-v2
+National Accountability Bureau,قومی احتساب بیورو,نیب,court,,glossary-v2
+hearing,سماعت,,court,,glossary-v2
+date of hearing,تاریخ سماعت,پیشی کی تاریخ,court,,glossary-v2
+adjournment,التوا,,court,,glossary-v2
+ex parte,یکطرفہ,,court,,glossary-v2
+cross-examination,جرح,,court,,glossary-v2
+statement,بیان,,court,,glossary-v2
+contempt of court,توہین عدالت,,court,,glossary-v2
+jurisdiction,دائرہ اختیار,,court,,glossary-v2
+interim order,عبوری حکم,,court,,glossary-v2
+petition,درخواست,,court,,glossary-v2
+petitioner,درخواست گزار,,court,,glossary-v2
+respondent,مسئول علیہ,جواب دہندہ,court,,glossary-v2
+appellant,اپیل کنندہ,,court,,glossary-v2
+review petition,درخواست نظرثانی,نظرثانی کی درخواست,court,,glossary-v2
+lawyer,وکیل,,court,,glossary-v2
+advocate,وکیل,,court,,glossary-v2
+counsel,وکیل,,court,,glossary-v2
+Advocate General,ایڈووکیٹ جنرل,,court,,glossary-v2
+Attorney General,اٹارنی جنرل,,court,,glossary-v2
+Bar Council,بار کونسل,,court,,glossary-v2
+oath,حلف,,court,,glossary-v2
+notice,نوٹس,,court,,glossary-v2
+legal notice,قانونی نوٹس,لیگل نوٹس,court,,glossary-v2
+burden of proof,بار ثبوت,ثبوت کی ذمہ داری,court,,glossary-v2
+documentary evidence,دستاویزی شہادت,دستاویزی ثبوت,court,,glossary-v2
+oral evidence,زبانی شہادت,زبانی گواہی,court,,glossary-v2
+suit,دعویٰ,,civil,,glossary-v2
+civil suit,دیوانی دعویٰ,,civil,,glossary-v2
+suit for declaration,دعویٰ استقرار حق,,civil,,glossary-v2
+plaint,عرضی دعویٰ,,civil,,glossary-v2
+written statement,جواب دعویٰ,,civil,,glossary-v2
+decree,ڈگری,,civil,,glossary-v2
+decree holder,ڈگری دار,,civil,,glossary-v2
+judgment debtor,مدیون ڈگری,,civil,,glossary-v2
+execution of decree,اجرائے ڈگری,ڈگری پر عملدرآمد,civil,,glossary-v2
+injunction,حکم امتناعی,,civil,,glossary-v2
+temporary injunction,عارضی حکم امتناعی,,civil,,glossary-v2
+permanent injunction,مستقل حکم امتناعی,,civil,,glossary-v2
+stay order,حکم امتناعی,اسٹے آرڈر,civil,,glossary-v2
+revision,نگرانی,ریویژن,civil,civil revision (s.115 CPC),glossary-v2
+damages,ہرجانہ,,civil,,glossary-v2
+compensation,معاوضہ,,civil,,glossary-v2
+contract,معاہدہ,,civil,,glossary-v2
+agreement,معاہدہ,,civil,,glossary-v2
+agreement to sell,اقرار نامہ بیع,,civil,,glossary-v2
+arbitration,ثالثی,,civil,,glossary-v2
+arbitrator,ثالث,,civil,,glossary-v2
+tenant,کرایہ دار,,civil,,glossary-v2
+landlord,مالک مکان,,civil,,glossary-v2
+rent,کرایہ,,civil,,glossary-v2
+ejectment,بے دخلی,,civil,,glossary-v2
+eviction,بے دخلی,,civil,,glossary-v2
+marriage,نکاح,,family,,glossary-v2
+nikahnama,نکاح نامہ,,family,,glossary-v2
+divorce,طلاق,,family,,glossary-v2
+khula,خلع,,family,,glossary-v2
+dower,حق مہر,,family,,glossary-v2
+maintenance,نان و نفقہ,,family,family-law sense,glossary-v2
+custody,تحویل,,family,,glossary-v2
+guardian,سرپرست,,family,,glossary-v2
+dissolution of marriage,تنسیخ نکاح,,family,,glossary-v2
+restitution of conjugal rights,اعادہ حقوق زن و شوہر,حقوق زوجیت کی بحالی,family,,glossary-v2
+inheritance,وراثت,,family,,glossary-v2
+heir,وارث,,family,,glossary-v2
+legal heir,قانونی وارث,,family,,glossary-v2
+property,جائیداد,,land,,glossary-v2
+immovable property,غیر منقولہ جائیداد,,land,,glossary-v2
+movable property,منقولہ جائیداد,,land,,glossary-v2
+possession,قبضہ,,land,,glossary-v2
+owner,مالک,,land,,glossary-v2
+ownership,ملکیت,,land,,glossary-v2
+sale deed,بیع نامہ,,land,,glossary-v2
+gift deed,ہبہ نامہ,,land,,glossary-v2
+mortgage,رہن,,land,,glossary-v2
+lease,پٹہ,,land,,glossary-v2
+khasra number,خسرہ نمبر,,land,,glossary-v2
+khewat,کھیوٹ,,land,,glossary-v2
+Patwari,پٹواری,,land,,glossary-v2
+Tehsildar,تحصیلدار,,land,,glossary-v2
+Sub-Registrar,سب رجسٹرار,,land,,glossary-v2
+land revenue,مالیہ,,land,,glossary-v2
+land acquisition,حصول اراضی,,land,,glossary-v2
+encroachment,تجاوزات,,land,,glossary-v2
+stamp paper,اسٹامپ پیپر,,land,,glossary-v2
+fundamental rights,بنیادی حقوق,,constitutional,,glossary-v2
+writ petition,رٹ پٹیشن,,constitutional,,glossary-v2
+Parliament,پارلیمنٹ,,constitutional,,glossary-v2
+National Assembly,قومی اسمبلی,,constitutional,,glossary-v2
+Senate,سینیٹ,,constitutional,,glossary-v2
+Provincial Assembly,صوبائی اسمبلی,,constitutional,,glossary-v2
+Federal Government,وفاقی حکومت,,constitutional,,glossary-v2
+Provincial Government,صوبائی حکومت,,constitutional,,glossary-v2
+government,حکومت,,constitutional,,glossary-v2
+ordinance,آرڈیننس,,constitutional,,glossary-v2
+amendment,ترمیم,,constitutional,,glossary-v2
+article,آرٹیکل,,constitutional,article of the Constitution,glossary-v2
+section,دفعہ,,statute,,glossary-v2
+sub-section,ذیلی دفعہ,,statute,,glossary-v2
+clause,شق,,statute,,glossary-v2
+schedule,جدول,,statute,,glossary-v2
+rules,قواعد,,statute,,glossary-v2
+notification,اعلامیہ,نوٹیفکیشن,statute,,glossary-v2
+Qanun-e-Shahadat Order,قانون شہادت آرڈر,,statute,1984,glossary-v2
+Muslim Family Laws Ordinance,مسلم عائلی قوانین آرڈیننس,,statute,1961,glossary-v2
+Anti-Terrorism Act,انسداد دہشت گردی ایکٹ,,statute,1997,glossary-v2
+FIR,ابتدائی اطلاعی رپورٹ,ایف آئی آر,criminal,First Information Report (s.154 CrPC),glossary-v3
+PPC,مجموعہ تعزیرات پاکستان,پی پی سی,statute,"Pakistan Penal Code, 1860",glossary-v3
+CrPC,مجموعہ ضابطہ فوجداری,سی آر پی سی,statute,"Code of Criminal Procedure, 1898",glossary-v3
+CPC,مجموعہ ضابطہ دیوانی,سی پی سی,statute,"Code of Civil Procedure, 1908",glossary-v3
+NAB,قومی احتساب بیورو,نیب,court,National Accountability Bureau,glossary-v3
+FIA,وفاقی تحقیقاتی ادارہ,ایف آئی اے,criminal,Federal Investigation Agency,glossary-v3
