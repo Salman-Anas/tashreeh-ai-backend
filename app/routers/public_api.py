@@ -23,9 +23,11 @@ from app.deps import RateLimiter, get_explainer, get_pipeline, glossary
 from app.errors import AppError
 from app.models import (
     ApiKeyStats,
+    GlossaryMatch,
     GlossaryTerm,
     PublicExplainRequest,
     PublicExplainResponse,
+    PublicHighlight,
     PublicTerm,
     PublicTranslateRequest,
     PublicTranslateResponse,
@@ -161,6 +163,20 @@ async def metered(key: dict[str, Any], endpoint: str, direction: str | None, inp
             )
 
 
+def _highlights(matches: list[GlossaryMatch]) -> list[PublicHighlight]:
+    return [
+        PublicHighlight(
+            start=m.span_start,
+            end=m.span_end,
+            term_en=m.term_en,
+            term_ur=m.term_ur,
+            term_ur_common=m.term_ur_common,
+            category=m.category,
+        )
+        for m in matches
+    ]
+
+
 @router.get("/health")
 async def v1_health() -> dict[str, object]:
     return {"status": "ok", "version": "v1", "model": get_settings().gemini_model}
@@ -190,7 +206,13 @@ async def v1_translate(body: PublicTranslateRequest, key: dict[str, Any] = Depen
         direction=body.direction,
         translation=result.translation,
         terms=[
-            PublicTerm(source=t.source, target=t.target, category=t.category, found=t.term_id not in missing_ids)
+            PublicTerm(
+                source=t.source,
+                target=t.target,
+                official=t.term_ur if body.direction == "en-ur" and t.target != t.term_ur else None,
+                category=t.category,
+                found=t.term_id not in missing_ids,
+            )
             for t in result.terms_required
         ],
         terms_missing=len(missing_ids),
@@ -198,6 +220,9 @@ async def v1_translate(body: PublicTranslateRequest, key: dict[str, Any] = Depen
         model=s.gemini_model,
         latency_ms=m.latency_ms,
         usage=m.usage(),
+        source_highlights=_highlights(result.glossary_matches),
+        output_highlights=_highlights(result.output_matches),
+        references=result.tm_examples_used,
         explanations=explanations if body.explain else None,
     )
 

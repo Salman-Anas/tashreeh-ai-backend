@@ -1,8 +1,13 @@
 """In-memory glossary matcher.
 
-English: case-insensitive, whole word/phrase, simple plurals, longest match first.
+English: case-insensitive (acronyms such as FIR are case-sensitive), whole
+word/phrase, simple plurals, longest match first.
 Urdu: on matching-normalized text (see ``normalize.py``), longest match first,
-with common plural/oblique endings; spans map back to the original text.
+with common plural/oblique endings; spans map back to the original text. A term
+matches in Urdu by its official legal form *or* its everyday form.
+
+Translations into Urdu use a term's everyday form (``term_ur_common``, e.g.
+ایف آئی آر) when it has one, else the official legal form (``term_ur``).
 """
 
 from __future__ import annotations
@@ -25,6 +30,9 @@ log = logging.getLogger(__name__)
 _UR_SUFFIXES = ("وں", "ان", "یں", "ات", "ین")
 # Words ending in ہ often take ے / وں in place of ہ (فیصلہ → فیصلے, فیصلوں).
 _UR_HEH_REPLACEMENTS = ("ے", "وں", "ات")
+# Glossary rows written by a human reviewer win when several rows match the same text.
+REVIEWED_SOURCE = "reviewed"
+_ACRONYM = re.compile(r"[A-Z][A-Z.&]{1,7}")
 
 
 def _plural_pattern(word: str) -> str:
@@ -39,10 +47,16 @@ def _plural_pattern(word: str) -> str:
 
 @functools.lru_cache(maxsize=4096)
 def english_term_pattern(term: str) -> re.Pattern[str]:
-    """Whole-phrase, case-insensitive pattern; the last word may be pluralised."""
+    """Whole-phrase pattern; the last word may be pluralised.
+
+    Case-insensitive, except for acronyms ("FIR", "PPC", "NAB") so they do not
+    match ordinary words ("fir", "nab").
+    """
     words = term.split()
     if not words:
         raise ValueError("empty term")
+    if len(words) == 1 and _ACRONYM.fullmatch(term):
+        return re.compile(rf"(?<![\w]){re.escape(term)}(?:s|'s)?(?![\w])")
     parts = [re.escape(w) for w in words[:-1]] + [_plural_pattern(words[-1])]
     body = r"[\s\-]+".join(parts)
     return re.compile(rf"(?<![\w]){body}(?![\w])", re.IGNORECASE)
@@ -94,7 +108,28 @@ def contains_term(text: str, term: str, lang: str) -> bool:
 class _Compiled:
     term: GlossaryTerm
     en_pattern: re.Pattern[str]
-    ur_norm: str
+    ur_norms: tuple[str, ...]  # official and everyday forms, matching-normalized
+
+
+def _rank(term: GlossaryTerm) -> tuple[int, int]:
+    """Tie-break for rows matching the same text: reviewed rows first, then lowest id."""
+    return (0 if term.source == REVIEWED_SOURCE else 1, term.id)
+
+
+def ur_keys(term: GlossaryTerm | RequiredTerm | GlossaryMatch) -> set[str]:
+    """Matching-normalized Urdu forms (official + everyday) of a term."""
+    return {k for k in (normalize_for_matching(term.term_ur), normalize_for_matching(term.term_ur_common or "")) if k}
+
+
+def _written_form(term: GlossaryTerm, matched: str | None) -> str:
+    """The Urdu form of ``term`` (official or everyday) that ``matched`` was written in."""
+    if matched and len(term.ur_forms) > 1:
+        norm = normalize_for_matching(matched)
+        for form in sorted(term.ur_forms, key=len, reverse=True):
+            stem = normalize_for_matching(form)
+            if norm.startswith(stem.removesuffix(HEH_GOAL) if len(stem) > 1 else stem):
+                return form
+    return term.term_ur
 
 
 class GlossaryMatcher:
@@ -110,9 +145,8 @@ class GlossaryMatcher:
         compiled: list[_Compiled] = []
         for t in terms:
             try:
-                compiled.append(
-                    _Compiled(t, english_term_pattern(t.term_en.strip()), normalize_for_matching(t.term_ur))
-                )
+                norms = tuple(dict.fromkeys(n for n in (normalize_for_matching(f) for f in t.ur_forms) if n))
+                compiled.append(_Compiled(t, english_term_pattern(t.term_en.strip()), norms))
             except ValueError:
                 log.warning("skipping empty glossary term id=%s", t.id)
         with self._lock:
@@ -126,6 +160,9 @@ class GlossaryMatcher:
     def __len__(self) -> int:
         return len(self._terms)
 
+    def get(self, term_id: int) -> GlossaryTerm | None:
+        return next((t for t in self._terms if t.id == term_id), None)
+
     def by_ids(self, ids: list[int]) -> list[GlossaryTerm]:
         """Terms for ``ids`` in the order given; unknown ids are skipped."""
         by_id = {t.id: t for t in self._terms}
@@ -135,8 +172,8 @@ class GlossaryMatcher:
         """The glossary entry whose English or Urdu side is exactly ``text`` (case/spelling-insensitive)."""
         en = " ".join(text.split()).lower()
         ur = normalize_for_matching(text)
-        for t in self._terms:
-            if t.term_en.strip().lower() == en or (ur and normalize_for_matching(t.term_ur) == ur):
+        for t in sorted(self._terms, key=_rank):
+            if t.term_en.strip().lower() == en or (ur and ur in ur_keys(t)):
                 return t
         return None
 
@@ -152,24 +189,25 @@ class GlossaryMatcher:
             if not norm:
                 return []
             for c in self._compiled:
-                for s, e in find_urdu(norm, c.ur_norm):
-                    end = idx[e - 1] + 1
-                    # Keep trailing diacritics attached to the highlighted word.
-                    while end < len(text) and unicodedata.category(text[end]) == "Mn":
-                        end += 1
-                    cands.append((idx[s], end, c))
+                for ur_norm in c.ur_norms:
+                    for s, e in find_urdu(norm, ur_norm):
+                        end = idx[e - 1] + 1
+                        # Keep trailing diacritics attached to the highlighted word.
+                        while end < len(text) and unicodedata.category(text[end]) == "Mn":
+                            end += 1
+                        cands.append((idx[s], end, c))
         return cands
 
     def match(self, text: str, lang: str) -> list[GlossaryMatch]:
         """Non-overlapping glossary matches in ``text`` ("en" or "ur").
 
-        Longest match wins; ties go to the earlier position, then lower term id.
-        When one span matches several terms (the same source term with alternative
-        translations) only the lowest-id term is returned for that span.
+        Longest match wins; ties go to the earlier position, then to a reviewed
+        row, then to the lower term id. When one span matches several terms (the
+        same source term with alternative translations) only one is returned.
         """
         with self._lock:
             cands = self._candidates(text, lang)
-        cands.sort(key=lambda x: (-(x[1] - x[0]), x[0], x[2].term.id))
+        cands.sort(key=lambda x: (-(x[1] - x[0]), x[0], _rank(x[2].term)))
         taken: list[tuple[int, int]] = []
         chosen: list[tuple[int, int, _Compiled]] = []
         for s, e, c in cands:
@@ -183,6 +221,7 @@ class GlossaryMatcher:
                 term_id=c.term.id,
                 term_en=c.term.term_en,
                 term_ur=c.term.term_ur,
+                term_ur_common=c.term.term_ur_common,
                 category=c.term.category,
                 notes=c.term.notes,
                 span_start=s,
@@ -195,12 +234,20 @@ class GlossaryMatcher:
         """Other accepted targets for the same source term."""
         if direction == "en-ur":
             key = term.term_en.strip().lower()
-            return [t.term_ur for t in self._terms if t.id != term.id and t.term_en.strip().lower() == key]
-        key = normalize_for_matching(term.term_ur)
-        return [t.term_en for t in self._terms if t.id != term.id and normalize_for_matching(t.term_ur) == key]
+            alts = [t.ur_target for t in self._terms if t.id != term.id and t.term_en.strip().lower() == key]
+            return [a for a in dict.fromkeys(alts) if a != term.ur_target]
+        keys = ur_keys(term)
+        alts = [t.term_en for t in self._terms if t.id != term.id and ur_keys(t) & keys]
+        return [a for a in dict.fromkeys(alts) if a.lower() != term.term_en.lower()]
 
-    def required_terms(self, matches: list[GlossaryMatch], direction: Direction) -> list[RequiredTerm]:
-        """Unique required terms (in first-appearance order) for ``matches``."""
+    def required_terms(
+        self, matches: list[GlossaryMatch], direction: Direction, text: str | None = None
+    ) -> list[RequiredTerm]:
+        """Unique required terms (in first-appearance order) for ``matches``.
+
+        ``text`` is the text the matches came from; for Urdu sources it tells which
+        Urdu form (official or everyday) the writer used.
+        """
         by_id = {t.id: t for t in self._terms}
         seen: set[int] = set()
         out: list[RequiredTerm] = []
@@ -211,7 +258,10 @@ class GlossaryMatcher:
             term = by_id.get(m.term_id)
             if term is None:
                 continue
-            src, tgt = (term.term_en, term.term_ur) if direction == "en-ur" else (term.term_ur, term.term_en)
+            if direction == "en-ur":
+                src, tgt = term.term_en, term.ur_target
+            else:
+                src, tgt = _written_form(term, text[m.span_start : m.span_end] if text else None), term.term_en
             out.append(
                 RequiredTerm(
                     term_id=term.id,
@@ -219,6 +269,7 @@ class GlossaryMatcher:
                     target=tgt,
                     term_en=term.term_en,
                     term_ur=term.term_ur,
+                    term_ur_common=term.term_ur_common,
                     category=term.category,
                     alternatives=self.alternatives(term, direction),
                 )
@@ -234,11 +285,13 @@ def load_terms_from_csv(path: Path) -> list[GlossaryTerm]:
             ur = (row.get("term_ur") or "").strip()
             if not en or not ur:
                 continue
+            common = (row.get("term_ur_common") or "").strip()
             terms.append(
                 GlossaryTerm(
                     id=i,
                     term_en=en,
                     term_ur=ur,
+                    term_ur_common=common if common and common != ur else None,
                     category=(row.get("category") or "").strip() or None,
                     notes=(row.get("notes") or "").strip() or None,
                     source=(row.get("source") or "").strip() or None,

@@ -14,18 +14,40 @@ Direction = Literal["en-ur", "ur-en"]
 class GlossaryTerm(BaseModel):
     id: int
     term_en: str
-    term_ur: str
+    term_ur: str  # official legal Urdu (as in statutes), e.g. ابتدائی اطلاعی رپورٹ
+    term_ur_common: str | None = None  # everyday Urdu used in translations, e.g. ایف آئی آر
     category: str | None = None
     notes: str | None = None
     source: str | None = None
+
+    @property
+    def ur_target(self) -> str:
+        """The Urdu a translation should use: the everyday form when there is one."""
+        return self.term_ur_common or self.term_ur
+
+    @property
+    def ur_forms(self) -> list[str]:
+        """Every Urdu spelling that refers to this term (everyday first)."""
+        return list(dict.fromkeys(f for f in (self.term_ur_common, self.term_ur) if f))
 
 
 class GlossaryTermCreate(BaseModel):
     term_en: str = Field(min_length=1, max_length=200)
     term_ur: str = Field(min_length=1, max_length=200)
+    term_ur_common: str | None = Field(default=None, max_length=200)
     category: str | None = Field(default=None, max_length=50)
     notes: str | None = Field(default=None, max_length=500)
     source: str | None = Field(default="user", max_length=100)
+
+
+class GlossaryTermUpdate(BaseModel):
+    """Fields to change; omitted fields stay as they are, empty strings clear optional ones."""
+
+    term_en: str | None = Field(default=None, min_length=1, max_length=200)
+    term_ur: str | None = Field(default=None, min_length=1, max_length=200)
+    term_ur_common: str | None = Field(default=None, max_length=200)
+    category: str | None = Field(default=None, max_length=50)
+    notes: str | None = Field(default=None, max_length=500)
 
 
 class GlossaryListResponse(BaseModel):
@@ -41,6 +63,7 @@ class GlossaryMatch(BaseModel):
     term_id: int
     term_en: str
     term_ur: str
+    term_ur_common: str | None = None
     category: str | None = None
     notes: str | None = None
     span_start: int
@@ -52,9 +75,10 @@ class RequiredTerm(BaseModel):
 
     term_id: int
     source: str  # term in the source language
-    target: str  # required term in the target language
+    target: str  # required term in the target language (everyday Urdu when translating into Urdu)
     term_en: str
-    term_ur: str
+    term_ur: str  # official legal Urdu
+    term_ur_common: str | None = None
     category: str | None = None
     alternatives: list[str] = Field(default_factory=list)  # other accepted targets
 
@@ -86,6 +110,8 @@ class LLMTranslation(BaseModel):
 
 class LLMTermExplanation(BaseModel):
     term_id: int
+    legal_en: str
+    legal_ur: str
     simple_en: str
     simple_ur: str
     example_en: str
@@ -103,7 +129,10 @@ class TermExplanation(BaseModel):
     term_id: int
     term_en: str
     term_ur: str
+    term_ur_common: str | None = None
     category: str | None = None
+    legal_en: str = ""  # the formal legal meaning under Pakistani law, in English
+    legal_ur: str = ""  # the same in Urdu
     simple_en: str  # what it means, for a non-lawyer, in plain English
     simple_ur: str  # the same in everyday Urdu
     example_en: str  # a short real-life example
@@ -201,16 +230,85 @@ class HistoryResponse(BaseModel):
     items: list[HistoryItem]
 
 
+class TermCorrection(BaseModel):
+    """A reader's better word for one glossary term, in the target language."""
+
+    term_id: int
+    source: str = Field(max_length=200)  # the term as it appears in the source language
+    old_target: str = Field(max_length=200)  # what the glossary asked for
+    new_target: str = Field(min_length=1, max_length=200)  # what the reader suggests
+
+
 class FeedbackRequest(BaseModel):
     translation_id: str
     rating: Literal[-1, 1] | None = None
     corrected_text: str | None = Field(default=None, max_length=20000)
     comment: str | None = Field(default=None, max_length=2000)
+    term_corrections: list[TermCorrection] | None = Field(default=None, max_length=30)
 
 
 class FeedbackResponse(BaseModel):
     id: int
     ok: bool = True
+
+
+# ---------------------------------------------------------------------------
+# Human review of corrections
+# ---------------------------------------------------------------------------
+ReviewStatus = Literal["pending", "approved", "rejected"]
+
+
+class ReviewTranslation(BaseModel):
+    id: str
+    direction: Direction
+    source_text: str
+    output_text: str
+
+
+class ReviewItem(BaseModel):
+    id: int
+    status: ReviewStatus
+    rating: int | None = None
+    comment: str | None = None
+    corrected_text: str | None = None
+    term_corrections: list[TermCorrection] = Field(default_factory=list)
+    review_note: str | None = None
+    created_at: datetime | None = None
+    reviewed_at: datetime | None = None
+    translation: ReviewTranslation | None = None
+
+
+class ReviewListResponse(BaseModel):
+    items: list[ReviewItem]
+    counts: dict[str, int]
+
+
+class ReviewApproveRequest(BaseModel):
+    """What the reviewer accepts. Omitted fields keep what the reader submitted."""
+
+    corrected_text: str | None = Field(default=None, max_length=20000)
+    term_corrections: list[TermCorrection] | None = Field(default=None, max_length=30)
+    note: str | None = Field(default=None, max_length=500)
+
+
+class ReviewRejectRequest(BaseModel):
+    note: str | None = Field(default=None, max_length=500)
+
+
+class GlossaryChange(BaseModel):
+    term_id: int
+    action: Literal["updated", "added"]
+    term_en: str
+    term_ur: str
+    term_ur_common: str | None = None
+
+
+class ReviewApproveResponse(BaseModel):
+    id: int
+    status: ReviewStatus = "approved"
+    tm_pairs_added: int = 0
+    glossary_changes: list[GlossaryChange] = Field(default_factory=list)
+    skipped: list[str] = Field(default_factory=list)  # parts that could not be learned, with the reason
 
 
 class HealthResponse(BaseModel):
@@ -309,8 +407,20 @@ class PublicTranslateRequest(BaseModel):
 class PublicTerm(BaseModel):
     source: str
     target: str
+    official: str | None = None  # official legal term, when the target is an everyday form
     category: str | None = None
     found: bool
+
+
+class PublicHighlight(BaseModel):
+    """A legal term's character span, for highlighting (``text[start:end]``)."""
+
+    start: int
+    end: int
+    term_en: str
+    term_ur: str  # official legal Urdu
+    term_ur_common: str | None = None  # everyday Urdu used in translations
+    category: str | None = None
 
 
 class PublicUsage(BaseModel):
@@ -333,6 +443,9 @@ class PublicTranslateResponse(BaseModel):
     model: str
     latency_ms: int
     usage: PublicUsage
+    source_highlights: list[PublicHighlight] = Field(default_factory=list)  # spans in the request text (after trimming)
+    output_highlights: list[PublicHighlight] = Field(default_factory=list)  # spans in "translation"
+    references: list[TMExample] = Field(default_factory=list)  # translation-memory pairs used as examples
     explanations: list[TermExplanation] | None = None  # present when explain=true
 
 

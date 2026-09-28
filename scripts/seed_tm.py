@@ -21,27 +21,9 @@ from pathlib import Path
 from app.config import BACKEND_DIR
 from app.db import DatabaseUnavailable, get_db
 from app.services.gemini_client import GeminiClient, GeminiError
-from app.services.normalize import normalize_for_matching, normalize_urdu, urdu_ratio
+from app.services.normalize import normalize_for_matching, normalize_urdu
 from app.services.tm import embedding_text
-
-MIN_RATIO, MAX_RATIO = 0.4, 2.5  # len(ur) / len(en), in characters
-MAX_CHARS = 3000
-
-
-def validate(en: str, ur: str) -> str | None:
-    """Return a rejection reason, or None if the pair looks usable."""
-    if not en or not ur:
-        return "empty side"
-    if len(en) > MAX_CHARS or len(ur) > MAX_CHARS:
-        return "too long"
-    ratio = len(ur) / len(en)
-    if not MIN_RATIO <= ratio <= MAX_RATIO:
-        return "length ratio out of range"
-    if urdu_ratio(ur) < 0.6:
-        return "text_ur is not mostly Urdu"
-    if urdu_ratio(en) > 0.2:
-        return "text_en contains Urdu script"
-    return None
+from app.services.tm import validate_pair as validate
 
 
 def read_pairs(path: Path) -> tuple[list[dict[str, str | None]], Counter[str]]:

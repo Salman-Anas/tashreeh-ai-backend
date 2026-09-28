@@ -13,7 +13,7 @@ from app.db import db_configured
 from app.deps import glossary, load_glossary
 from app.errors import register_error_handlers
 from app.models import HealthResponse
-from app.routers import developer, explain, feedback, glossary as glossary_router, history, public_api, translate
+from app.routers import developer, explain, feedback, glossary as glossary_router, history, public_api, review, translate
 from app.services.gemini_client import get_gemini
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
@@ -30,7 +30,7 @@ class ScopedCORS:
 
     def __init__(self, app: ASGIApp, site_origins: list[str]) -> None:
         self.site = CORSMiddleware(
-            app, allow_origins=site_origins, allow_credentials=False, allow_methods=["GET", "POST", "DELETE"], allow_headers=["*"]
+            app, allow_origins=site_origins, allow_credentials=False, allow_methods=["GET", "POST", "PATCH", "DELETE"], allow_headers=["*"]
         )
         self.public = CORSMiddleware(
             app, allow_origins=["*"], allow_credentials=False, allow_methods=["GET", "POST"],
@@ -65,6 +65,7 @@ app.include_router(explain.router)
 app.include_router(glossary_router.router)
 app.include_router(history.router)
 app.include_router(feedback.router)
+app.include_router(review.router)
 app.include_router(developer.router)
 app.include_router(public_api.router)
 

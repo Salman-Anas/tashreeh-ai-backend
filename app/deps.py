@@ -28,14 +28,31 @@ _pipeline: TranslationPipeline | None = None
 _explainer: TermExplainer | None = None
 
 
+GLOSSARY_COLUMNS = "id,term_en,term_ur,term_ur_common,category,notes,source"
+_LEGACY_COLUMNS = "id,term_en,term_ur,category,notes,source"
+
+
 def _fetch_glossary_from_db() -> list[GlossaryTerm]:
+    try:
+        return _fetch_glossary_rows(GLOSSARY_COLUMNS)
+    except Exception as exc:  # noqa: BLE001
+        if "term_ur_common" not in str(exc):
+            raise
+        log.warning(
+            "glossary: column term_ur_common is missing — run supabase/003_everyday_terms_and_review.sql. "
+            "Loading without everyday Urdu forms."
+        )
+        return _fetch_glossary_rows(_LEGACY_COLUMNS)
+
+
+def _fetch_glossary_rows(columns: str) -> list[GlossaryTerm]:
     db = get_db()
     rows: list[dict] = []  # type: ignore[type-arg]
     page, size = 0, 1000
     while True:
         res = (
             db.table("glossary_terms")
-            .select("id,term_en,term_ur,category,notes,source")
+            .select(columns)
             .order("id")
             .range(page * size, page * size + size - 1)
             .execute()

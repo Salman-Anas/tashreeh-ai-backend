@@ -1,7 +1,8 @@
 """Plain-language explanations of legal terms ("Explain in simple words").
 
-For each glossary term, Gemini writes what it means for an ordinary person in
-simple English and everyday Urdu, plus a short real-life example in both.
+For each glossary term, Gemini writes its formal legal meaning under Pakistani
+law, what it means for an ordinary person in simple English and everyday Urdu,
+and a short real-life example in both.
 Only glossary terms are explained (never free text from the request), and
 explanations are cached per term: a term explained once costs nothing after.
 """
@@ -28,6 +29,10 @@ CACHE_SIZE = 2000
 EXPLAIN_INSTRUCTION = """\
 You explain Pakistani legal terms to ordinary people who have no legal training.
 For every term you are given, write:
+- legal_en: the term's formal legal meaning under Pakistani law (Constitution, statutes, court usage) in one or two \
+precise sentences. Name the law it comes from (e.g. "Code of Criminal Procedure, 1898") and a section or article \
+number only if you are certain of it.
+- legal_ur: the same legal meaning in Urdu script; you may use the official legal term here.
 - simple_en: one or two short sentences in plain English saying what the term means in practice in Pakistan. No legal jargon; if you must use a legal word, explain it.
 - simple_ur: the same meaning in simple, everyday Urdu (عام فہم اردو) in Urdu script, not formal legal Urdu.
 - example_en: one short, realistic example situation in Pakistan (one or two sentences) that shows the term in use.
@@ -53,9 +58,10 @@ def _key(term: GlossaryTerm) -> tuple[str, str]:
 def _prompt(terms: list[GlossaryTerm]) -> str:
     lines = ["TERMS TO EXPLAIN:"]
     for t in terms:
+        common = f" | everyday Urdu: {t.term_ur_common}" if t.term_ur_common else ""
         extra = f" | category: {t.category}" if t.category else ""
         note = f" | note: {t.notes}" if t.notes else ""
-        lines.append(f"- term_id {t.id}: {t.term_en} = {t.term_ur}{extra}{note}")
+        lines.append(f"- term_id {t.id}: {t.term_en} | official Urdu: {t.term_ur}{common}{extra}{note}")
     return "\n".join(lines)
 
 
@@ -73,7 +79,14 @@ class TermExplainer:
             self._cache.move_to_end(_key(term))
         # Same words, but report the id and names the caller's glossary uses.
         return hit.model_copy(
-            update={"term_id": term.id, "term_en": term.term_en, "term_ur": term.term_ur, "category": term.category, "cached": True}
+            update={
+                "term_id": term.id,
+                "term_en": term.term_en,
+                "term_ur": term.term_ur,
+                "term_ur_common": term.term_ur_common,
+                "category": term.category,
+                "cached": True,
+            }
         )
 
     def _store(self, exp: TermExplanation, term: GlossaryTerm) -> None:
@@ -113,7 +126,10 @@ class TermExplainer:
                     term_id=term.id,
                     term_en=term.term_en,
                     term_ur=term.term_ur,
+                    term_ur_common=term.term_ur_common,
                     category=term.category,
+                    legal_en=item.legal_en.strip(),
+                    legal_ur=normalize_urdu(item.legal_ur, preserve_newlines=False),
                     simple_en=item.simple_en.strip(),
                     simple_ur=normalize_urdu(item.simple_ur, preserve_newlines=False),
                     example_en=item.example_en.strip(),

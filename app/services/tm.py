@@ -10,9 +10,28 @@ from app.config import get_settings
 from app.db import DatabaseUnavailable, db_configured, get_db
 from app.models import Direction, TMExample
 from app.services.gemini_client import GeminiClient, GeminiError
-from app.services.normalize import normalize_for_matching
+from app.services.normalize import normalize_for_matching, urdu_ratio
 
 log = logging.getLogger(__name__)
+
+MIN_RATIO, MAX_RATIO = 0.4, 2.5  # len(ur) / len(en), in characters
+MAX_CHARS = 3000
+
+
+def validate_pair(en: str, ur: str) -> str | None:
+    """Return a rejection reason, or None if the pair looks usable as a TM example."""
+    if not en or not ur:
+        return "empty side"
+    if len(en) > MAX_CHARS or len(ur) > MAX_CHARS:
+        return "too long"
+    ratio = len(ur) / len(en)
+    if not MIN_RATIO <= ratio <= MAX_RATIO:
+        return "length ratio out of range"
+    if urdu_ratio(ur) < 0.6:
+        return "text_ur is not mostly Urdu"
+    if urdu_ratio(en) > 0.2:
+        return "text_en contains Urdu script"
+    return None
 
 
 class TMRetriever(Protocol):
@@ -62,6 +81,28 @@ class SupabaseTM:
             log.warning("tm: supabase rpc failed, continuing without examples: %s", exc)
             return []
         return [TMExample.model_validate(r) for r in rows]
+
+
+async def add_pairs(gemini: GeminiClient, pairs: list[tuple[str, str]], source: str) -> int:
+    """Embed both sides of ``(text_en, text_ur)`` pairs and upsert them into the TM.
+
+    Pairs must already be validated and normalized. Returns the number stored.
+    Raises ``GeminiError`` / database errors: the caller decides how to report them.
+    """
+    if not pairs:
+        return 0
+    en_vecs = await gemini.embed_documents([embedding_text(en, "en") for en, _ in pairs])
+    ur_vecs = await gemini.embed_documents([embedding_text(ur, "ur") for _, ur in pairs])
+    rows = [
+        {"text_en": en, "text_ur": ur, "source": source, "embedding_en": ve, "embedding_ur": vu}
+        for (en, ur), ve, vu in zip(pairs, en_vecs, ur_vecs, strict=True)
+    ]
+
+    def upsert() -> None:
+        get_db().table("translation_memory").upsert(rows, on_conflict="text_en,text_ur").execute()
+
+    await asyncio.to_thread(upsert)
+    return len(rows)
 
 
 class NullTM:

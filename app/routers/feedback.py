@@ -5,7 +5,7 @@ import uuid
 
 from fastapi import APIRouter
 
-from app.db import db_configured, get_db
+from app.db import MIGRATION_HINT, db_configured, get_db, is_outdated_schema
 from app.errors import AppError
 from app.models import FeedbackRequest, FeedbackResponse
 
@@ -14,7 +14,9 @@ router = APIRouter(prefix="/api/feedback", tags=["feedback"])
 
 @router.post("", response_model=FeedbackResponse, status_code=201)
 async def submit_feedback(body: FeedbackRequest) -> FeedbackResponse:
-    if body.rating is None and not (body.corrected_text or "").strip() and not (body.comment or "").strip():
+    corrected = (body.corrected_text or "").strip() or None
+    term_fixes = [c for c in body.term_corrections or [] if c.new_target.strip() and c.new_target.strip() != c.old_target.strip()]
+    if body.rating is None and not corrected and not term_fixes and not (body.comment or "").strip():
         raise AppError(422, "empty_feedback", "Provide a rating, a correction, or a comment.")
     try:
         uuid.UUID(body.translation_id)
@@ -26,9 +28,11 @@ async def submit_feedback(body: FeedbackRequest) -> FeedbackResponse:
     row = {
         "translation_id": body.translation_id,
         "rating": body.rating,
-        "corrected_text": (body.corrected_text or "").strip() or None,
+        "corrected_text": corrected,
         "comment": (body.comment or "").strip() or None,
-        # Corrections are reviewed by a human before they enter the TM.
+        "term_corrections": [c.model_dump() for c in term_fixes] or None,
+        # Corrections wait for a human reviewer (see /api/review) before anything learns from them.
+        "status": "pending" if corrected or term_fixes else None,
         "approved_for_tm": False,
     }
 
@@ -43,5 +47,7 @@ async def submit_feedback(body: FeedbackRequest) -> FeedbackResponse:
             raise AppError(
                 404, "translation_not_found", "That translation was not saved, so feedback cannot be linked to it."
             ) from exc
+        if is_outdated_schema(exc):
+            raise AppError(503, "schema_outdated", MIGRATION_HINT) from exc
         raise
     return FeedbackResponse(id=new_id)

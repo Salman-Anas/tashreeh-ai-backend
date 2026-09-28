@@ -100,6 +100,10 @@ def test_v1_translate_meters_usage_and_cost(client: TestClient) -> None:
     body = r.json()
     assert body["translation"].startswith("عدالت عالیہ")
     assert body["terms_missing"] == 0 and {t["source"] for t in body["terms"]} == {"High Court", "bail", "accused"}
+    src = "The High Court granted bail to the accused."
+    assert [src[h["start"]:h["end"]] for h in body["source_highlights"]] == ["High Court", "bail", "accused"]
+    assert {body["translation"][h["start"]:h["end"]] for h in body["output_highlights"]} == {"عدالت عالیہ", "ملزم", "ضمانت"}
+    assert body["references"] == []
     u = body["usage"]
     assert (u["input_tokens"], u["output_tokens"], u["total_tokens"]) == (1000, 300, 1300)
     expected = (1000 * 0.75 + 300 * 3.75) / 1e6

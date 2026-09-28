@@ -16,25 +16,31 @@ from dataclasses import dataclass, field
 from typing import Protocol
 
 from app.models import Direction, GlossaryMatch, LLMTranslation, RequiredTerm, TMExample
-from app.services.glossary import GlossaryMatcher
-from app.services.normalize import normalize_for_matching
+from app.services.glossary import GlossaryMatcher, ur_keys
 from app.services.term_check import TermCheckResult, check_terms
 from app.services.tm import TMRetriever
 
 log = logging.getLogger(__name__)
 
 SYSTEM_INSTRUCTION = """\
-You are an expert legal translator specialising in Pakistani law, translating between English and Urdu.
+You are an expert legal translator specialising in Pakistani law, translating between English and Urdu \
+for ordinary Pakistani readers, not lawyers.
 Rules:
-1. Translate faithfully. Do not summarise, explain, add, or omit content.
+1. Translate faithfully. Do not summarise, explain, add, or omit content. The legal meaning must stay exact.
 2. You MUST use the exact target-language term given in REQUIRED TERMS for each listed source term. \
-You may inflect it only where grammar strictly requires (e.g. plural), keeping the term itself recognisable.
-3. Use formal legal Urdu (as used in Pakistani statutes and court documents) when translating into Urdu; \
-use formal legal English when translating into English.
+You may inflect it only where grammar strictly requires (e.g. plural), keeping the term itself recognisable. \
+These are the words people actually use (e.g. FIR → ایف آئی آر, High Court → ہائی کورٹ); \
+do not replace them with a more formal synonym.
+3. When translating into Urdu, write clear, everyday Urdu (عام فہم اردو) that a reader with ordinary schooling \
+understands at first reading: natural word order, common words, short sentences where the source allows. \
+Avoid archaic or heavily Persianised court Urdu. Where an English legal word is commonly spoken in Urdu \
+(FIR, challan, remand, stay order), write it in Urdu script. When translating into English, use plain, clear English.
 4. Preserve section numbers, article numbers, clause labels like (a), (b), (i), dates, names, and citations \
 such as "PLD 2024 SC 337" exactly.
-5. Keep Pakistani legal statute names in their standard form (e.g. Pakistan Penal Code ↔ مجموعہ تعزیرات پاکستان).
-6. Follow the style of the EXAMPLES where relevant. The examples are references, not text to translate.
+5. Keep Pakistani statute names recognisable, using the REQUIRED TERMS form when one is given \
+(e.g. PPC → تعزیرات پاکستان).
+6. Use the EXAMPLES for meaning and terminology. Some are in formal court Urdu: keep their meaning but prefer \
+everyday wording and the REQUIRED TERMS. The examples are references, not text to translate.
 7. If a phrase is ambiguous, choose the most likely legal meaning and mention it in "notes".
 8. Preserve line breaks of the SOURCE TEXT. Output only the translation in "translation".
 9. In "terms_used" list each REQUIRED TERM you applied as {"source", "target"}. \
@@ -138,7 +144,7 @@ class TranslationPipeline:
     async def translate_segment(self, text: str, direction: Direction) -> SegmentResult:
         src, _ = langs(direction)
         matches = self.glossary.match(text, src)
-        required = self.glossary.required_terms(matches, direction)
+        required = self.glossary.required_terms(matches, direction, text)
         examples = await self.tm.retrieve(text, direction)
 
         out = await self.llm.generate_structured(
@@ -225,5 +231,5 @@ class TranslationPipeline:
         if direction == "en-ur":
             keys = {t.term_en.strip().lower() for t in required}
             return [m for m in self.glossary.match(output, tgt) if m.term_en.strip().lower() in keys]
-        keys = {normalize_for_matching(t.term_ur) for t in required}
-        return [m for m in self.glossary.match(output, tgt) if normalize_for_matching(m.term_ur) in keys]
+        keys = set().union(*(ur_keys(t) for t in required)) if required else set()
+        return [m for m in self.glossary.match(output, tgt) if ur_keys(m) & keys]
